@@ -8,9 +8,10 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import environment from '../environment';
 import axios from 'axios';
-
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+  const navigate = useNavigate();
     const formik = useFormik({
         initialValues: {
             username:'',
@@ -31,6 +32,11 @@ const Login = () => {
             axios.post(`${environment.api}/user/login`,values)
             .then((res) =>{
                 console.log(res)
+                const token = res.data.token;
+              if(token){
+                localStorage.setItem("token",token);
+                navigate("/")
+              }
             })
             .catch((err)=>{
                 alert("unauthorized access")
@@ -43,7 +49,7 @@ const Login = () => {
          <Row>
             <Col>
             <Form onSubmit={formik.handleSubmit}>
-            <Form.Group className="mb-3 mt-5" controlId="username">
+            <Form.Group className="mt-5" controlId="username">
               <Form.Label>UserName</Form.Label>
               <Form.Control
                 type="text"
@@ -59,7 +65,7 @@ const Login = () => {
               </Form.Text>
             </Form.Group>
 
-            <Form.Group className="mb-3 mt-5" controlId="password">
+            <Form.Group className="mb-3" controlId="password">
               <Form.Label>Password</Form.Label>
               <Form.Control
                 type="password"
